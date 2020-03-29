@@ -1,24 +1,28 @@
-const  express = require('express');
+const express = require('express');
 
 const app = express();
 
-app.use((req, res, next) => {
-    console.log('request received!');
-    next();
+app.use('/api/stuff', (req, res, next) => {
+    const stuff = [
+        {
+            _id: 'odfdjdfy',
+            title: 'My first thing',
+            description: 'All the info about my first thing',
+            imageUrl: '',
+            price: 4900,
+            userId: 'hdhsnnchd',
+        },
+        {
+            _id: 'jjdsbstsq',
+            title: 'My second thing',
+            description: 'All the info about my second thing',
+            imageUrl: '',
+            price: 2300,
+            userId: 'hdhsnnchd',
+        },
+    ];
+    res.status(200).json(stuff);
 });
 
-app.use((req, res, next) => {
-    res.status(201);
-    next();
-});
-
-app.use((req, res, next)=> {
-    res.json({ message : 'Your request was successeful!'});
-    next();
-});
-
-app.use((req, res, next) => {
-    console.log('Response sent successfully!');
-});
 
 module.exports = app;
