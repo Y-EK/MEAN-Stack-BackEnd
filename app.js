@@ -5,6 +5,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
+const Thing = require('./models/thing');
+
 const app = express();  
 
 mongoose.connect('mongodb+srv://will:REdZ170gKQpf8KS8@cluster0-lh2dz.mongodb.net/test?retryWrites=true&w=majority')
@@ -26,10 +28,26 @@ app.use((req, res, next) => {
 app.use(bodyParser.json());
 
 app.post('/api/stuff', (req, res, next) => {
-    console.log(req.body);
-    res.status(201).json({
-        message: 'Thing created successfully!'
+    const thing = new Thing({
+        title: req.body.title,
+        description: req.body.description,
+        imageUrl: req.body.imageUrl,
+        price: req.body.price,
+        userId: req.body.userId
     });
+    thing.save().then(
+        () => {
+            res.status(201).json({
+                message: 'Post saved successfully!'
+            });
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                error: error
+            });
+        }
+    );
 });
 
 app.use('/api/stuff', (req, res, next) => {
