@@ -5,7 +5,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-const Thing = require('./models/thing');
+//const Thing = require('./models/thing');
+const Product = require('./models/product');
 
 const app = express();  
 
@@ -27,18 +28,20 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json());
 
-app.post('/api/stuff', (req, res, next) => {
-    const thing = new Thing({
-        title: req.body.title,
+
+// Creates a new instance of Product model in the database
+
+app.post('/api/products', (req, res, next) => {
+    const product = new Product({
+        name: req.body.name,
         description: req.body.description,
-        imageUrl: req.body.imageUrl,
         price: req.body.price,
-        userId: req.body.userId
+        inStock: req.body.inStock
     });
-    thing.save().then(
-        () => {
+    product.save().then(
+        (product) => {
             res.status(201).json({
-                message: 'Post saved successfully!'
+                product
             });
         }
     ).catch(
@@ -50,12 +53,16 @@ app.post('/api/stuff', (req, res, next) => {
     );
 });
 
-app.get('/api/stuff/:id', (req, res, next) => {
-    Thing.findOne({
+// Returns the product with the provided  _id  as  { product: Product }
+
+app.get('/api/products/:id', (req, res, next) => {
+    Product.findOne({
         _id: req.params.id
     }).then(
-        (thing) => {
-            res.status(200).json(thing);
+        (product) => {
+            res.status(200).json({ 
+                product
+            });
         }
     ).catch(
         (error) => {
@@ -66,8 +73,35 @@ app.get('/api/stuff/:id', (req, res, next) => {
     );
 });
 
-app.delete('/api/stuff/:id', (req, res, next) => {
-    Thing.deleteOne({_id: req.params.id}).then(
+// Updates the product with the provided _id  with the data provided in the request body
+
+app.put('/api/products/:id', (req, res, next) => {
+    const product = new Product({
+        _id: req.params.id,
+        name: req.body.name,
+        description: req.body.description,
+        price: req.body.price,
+        inStock: req.body.inStock
+    });
+    Product.updateOne({_id: req.params.id}, product).then(
+        () => {
+            res.status(201).json({
+                message: 'Modified!'
+            });
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                error: error
+            });
+        }
+    );
+});
+
+// Deletes the product with the provided  _id
+
+app.delete('/api/products/:id', (req, res, next) => {
+    Product.deleteOne({_id: req.params.id}).then(
         () => {
             res.status(200).json({
                 message: 'Deleted!'
@@ -82,43 +116,22 @@ app.delete('/api/stuff/:id', (req, res, next) => {
     );
 });
 
-app.put('/api/stuff/:id', (req, res, next) => {
-    const thing = new Thing({
-        _id: req.params.id,
-        title: req.body.title,
-        description: req.body.description,
-        imageUrl: req.body.imageUrl,
-        price: req.body.price,
-        userId: req.body.userId
-    });
-    Thing.updateOne({_id: req.params.id}, thing).then(
-        () => {
-            res.status(201).json({
-                message: 'Thing updated sucessfully!'
-            });
-        }
-    ).catch(
-        (error) => {
-            res.status(400).json({
-                error: error
-            });
-        }
-    );
-});
+// Returns all products in the database as  { products: Product[] }
 
-app.use('/api/stuff', (req, res, next) => {
-    Thing.find().then(
-        (things) => {
-            res.status(200).json(things);
-        }
+app.use('/api/products', (req, res, next) => {
+    Product.find().then(
+      (products) => {
+        res.status(200).json({
+            products
+        });
+      }
     ).catch(
-        (error) => {
-            res.status(400).json({
-                error: error
-            });
-        }
+      (error) => {
+        res.status(400).json({
+          error: error
+        });
+      }
     );
-});
-
+  });
 
 module.exports = app;
