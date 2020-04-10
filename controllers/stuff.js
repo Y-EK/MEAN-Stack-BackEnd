@@ -6,7 +6,7 @@ exports.createThing = (req, res, next) => {
     const thing = new Thing({
         title: req.body.thing.title,
         description: req.body.thing.description,
-        imageUrl: url + '/images' + req.file.filemane,
+        imageUrl: url + '/images/' + req.file.filemane,
         price: req.body.thing.price,
         userId: req.body.thing.userId
     });
