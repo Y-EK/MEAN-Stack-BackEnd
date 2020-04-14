@@ -2,11 +2,23 @@ const Thing = require('../models/thing');
 
 exports.createThing = (req, res, next) => {
     req.body.thing = JSON.parse(req.body.thing);
+    //if(req.body.thing) {
+        //try {
+            //req.body.thing = JSON.parse(req.body.thing);
+           //commi = 1 / n
+            //e = req.body.thing;
+        //} catch(e) {
+            //alert(e); // error in the above string (in this case, yes)!
+        //}
+    //}
+    
     const url = req.protocol + '://' + req.get('host');
+    //console.log("***** req.body : \n" + JSON.stringify(req.body))
+    //console.log("***** req.file.filename : \n" + req.file.filename)
     const thing = new Thing({
         title: req.body.thing.title,
         description: req.body.thing.description,
-        imageUrl: url + '/images/' + req.file.filemane,
+        imageUrl: url + '/images/' + req.file.filename,
         price: req.body.thing.price,
         userId: req.body.thing.userId
     });
