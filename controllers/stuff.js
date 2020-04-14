@@ -5,7 +5,6 @@ exports.createThing = (req, res, next) => {
     //if(req.body.thing) {
         //try {
             //req.body.thing = JSON.parse(req.body.thing);
-           //commi = 1 / n
             //e = req.body.thing;
         //} catch(e) {
             //alert(e); // error in the above string (in this case, yes)!
@@ -70,14 +69,28 @@ exports.deleteThing = (req, res, next) => {
 };
 
 exports.modifyThing = (req, res, next) => {
-    const thing = new Thing({
-        _id: req.params.id,
-        title: req.body.title,
-        description: req.body.description,
-        imageUrl: req.body.imageUrl,
-        price: req.body.price,
-        userId: req.body.userId
-    });
+    let thing = new Thing({ _id: req.params._id });
+    if (req.file){
+        req.body.thing = JSON.parse(req.body.thing);
+        const url = req.protocol + '://' + req.get('host');
+        thing = {
+            _id: req.params.id,
+            title: req.body.thing.title,
+            description: req.body.thing.description,
+            imageUrl: url + '/images/' + req.file.filename,
+            price: req.body.thing.price,
+            userId: req.body.thing.userId
+        };
+    } else {
+        thing = {
+            _id: req.params.id,
+            title: req.body.title,
+            description: req.body.description,
+            imageUrl: req.body.imageUrl,
+            price: req.body.price,
+            userId: req.body.userId
+        };
+    }
     Thing.updateOne({_id: req.params.id}, thing).then(
         () => {
             res.status(201).json({
